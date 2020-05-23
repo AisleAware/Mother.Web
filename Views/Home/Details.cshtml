@@ -1,0 +1,110 @@
+﻿@model Mother.Web.ViewModels.DetailsViewModel
+@using AisleAware.Common.Mother
+
+@{
+    ViewData["Title"] = $"{Model.Name} Details";
+    DateTime timeLast = DateTime.Now;
+}
+
+<div class="text-center">
+    <h1>Calls from @Model.Name</h1>
+    <h4>@DateTime.Now</h4>
+</div>
+<hr />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#statusfilter,#datefilter').change(function () {
+            this.form.submit();
+        });
+    });
+</script>
+<div>
+    <form enctype="multipart/form-data" asp-controller="home" asp-action="details" method="get" class="form">
+        <input hidden asp-for="Name" />
+        <div class="form-group row">
+            <label asp-for="FilterStatus" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <select name="status" id="statusfilter" asp-for="FilterStatus" class="custom-select" style="text-align: center; text-align-last: center;" asp-items="Html.GetEnumSelectList<StatusId>()">
+                    <option value="">Status</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="FilterTimeStart" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-10">
+                <input type="date" name="datestart" id="datefilter" asp-for="FilterTimeStart" class="mb-2" />
+            </div> 
+            @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
+        </div>
+    </form>
+</div>
+<hr />
+<div class="row justify-content-center">
+    <table class="table table-bordered table-sm w-auto">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Time</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Version</th>
+                <th scope="col">License</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var call in Model.Calls)
+            {
+                DateTime RightNow = DateTime.Now;
+                string statuscolor;
+                string versioncolor = "white";
+                switch (call.Status)
+                {
+                    case StatusId.Active: statuscolor = "limegreen"; break;
+                    case StatusId.AlarmOn: statuscolor = "orangered"; break;
+                    case StatusId.AlarmOff: statuscolor = "gold"; break;
+                    case StatusId.Error: statuscolor = "red"; break;
+                    case StatusId.Event: statuscolor = "violet"; break;
+                    case StatusId.Idle: statuscolor = "lightgreen"; break;
+                    case StatusId.Normal: statuscolor = "white"; break;
+                    case StatusId.Shutdown: statuscolor = "darkgray"; break;
+                    case StatusId.Start: statuscolor = "lightgray"; break;
+                    case StatusId.All: statuscolor = "lime"; break;
+                    case StatusId.Warning: statuscolor = "orange"; break;
+                    default: statuscolor = "gray"; break;
+                }
+
+                // Check for missed hourly status updates and show a dividing line if a time gap exists
+                bool TimeGap = false;
+                double hours = (timeLast - call.Time).TotalHours;
+                if (Model.FilterStatus == StatusId.All && hours > 1.5)
+                {
+                    TimeGap = true;
+                    string WarningText = hours < 48 ? $"{(int)(hours + 0.5)} HOURS" : $"{(int)(hours / 24 + 0.5)} DAYS";
+            <tr style="border-top: solid 3px #000;">
+                <td colspan="4" class="text-center bg-warning font-weight-bold">@WarningText TIME GAP</td>
+            </tr>
+                }
+                timeLast = call.Time;
+
+            <tr @if (TimeGap) { <text> style="border-top: solid 3px #000;" </text>    }>
+                <td>@call.Time</td>
+                <td class="text-center" style="background-color: @statuscolor;">@call.Status</td>
+                <td class="text-center" style="background-color: @versioncolor;">@call.Version</td>
+                <td>@call.License</td>
+            </tr>
+                }
+            @if (Model.Calls.Count() == 0)
+                {
+            <tr>
+                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">No Calls</td>
+            </tr>
+            }
+        </tbody>
+        <tfoot class="thead-dark">
+            <tr>
+                <th scope="col">Time</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Version</th>
+                <th scope="col">License</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
