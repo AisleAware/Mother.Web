@@ -14,28 +14,32 @@
 <hr />
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#dayfilter,#typefilter,#activefilter,#sortby').change(function () {
+        $('#filterform select').change(function () {
             this.form.submit();
         });
         $('t')
+
+        $('#resetform').on("click", function () {
+            $("#filterform select").val("-1").change();
+        });
     });
 </script>
 <div class="row justify-content-center align-items-center">
-    <form enctype="multipart/form-data" asp-controller="home" asp-action="index" method="get" class="form">
+    <form enctype="multipart/form-data" id="filterform" asp-controller="home" asp-action="index" method="get" class="form">
         <div class="row">
             <div class="form-group">
                 <label asp-for="FilterDays" class="col col-form-label"></label>
-                <div class="form-group mx-3 mb-2">
+                <div class="form-group mx-3 mb-0">
                     <select name="days" id="dayfilter" asp-for="FilterDays" class="custom-select mr-2" asp-items="@(new SelectList(DaySelectChoices))">
                         @*<option value="">Days</option>*@
                     </select>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="FilterType" class="col col-form-label"></label>
-                <div class="form-group mx-3 mb-2">
-                    <select name="type" id="typefilter" asp-for="FilterType" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<ProductId>()">
-                        @*<option value="">Type</option>*@
+                <label asp-for="FilterProduct" class="col col-form-label"></label>
+                <div class="form-group mx-3 mb-0">
+                    <select name="product" id="productfilter" asp-for="FilterProduct" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<ProductId>()">
+                        @*<option value="">Product</option>*@
                     </select>
                 </div>
             </div>
@@ -53,12 +57,15 @@
             <div class="form-group">
                 <label asp-for="SortBy" class="col col-form-label"></label>
                 <div class="form-group mx-3 mb-2">
-                    <select name="sortby" id="sortby" asp-for="SortBy" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<SortId>()">
+                    <select name="sortby" id="sortfilter" asp-for="SortBy" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<SortId>()">
                         @*<option value="">Sort by</option>*@
                     </select>
                 </div>
                 @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
             </div>
+        </div>
+        <div class="row justify-content-center">
+            <input id="resetform" type="button" value="Reset" class="col-6" />
         </div>
     </form>
 </div>

@@ -13,13 +13,13 @@
 <hr />
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#statusfilter,#datefilter').change(function () {
+        $('#theform select,input').change(function () {
             this.form.submit();
         });
     });
 </script>
 <div>
-    <form enctype="multipart/form-data" asp-controller="home" asp-action="details" method="get" class="form">
+    <form enctype="multipart/form-data" id="theform" asp-controller="home" asp-action="details" method="get" class="form">
         <input hidden asp-for="Name" />
         <div class="form-group row">
             <label asp-for="FilterStatus" class="col-sm-2 col-form-label"></label>
@@ -33,8 +33,22 @@
             <label asp-for="FilterTimeStart" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
                 <input type="date" name="datestart" id="datefilter" asp-for="FilterTimeStart" class="mb-2" />
-            </div> 
+            </div>
             @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
+        </div>
+    </form>
+    <form enctype="multipart/form-data" asp-controller="home" asp-action="delete" asp-route-name="@Model.Name" method="post" class="form">
+        <div class="form-group row">
+            @*<button type="submit" class="btn btn-danger ml-2 mb-2" onclick="return confirm('Are you sure yo want to delete caller @Model.Name')">Delete</button>*@
+
+            <span id="confirmDeleteSpan" style="display:none;">
+                <span>Are you sure you want to delete?</span>
+                <button type="submit" class="btn btn-danger ml-2 mb-2">Yes</button>
+                <a href="#" class="btn btn-primary ml-2 mb-2" onclick="confirmDelete(false)">No</a>
+            </span>
+            <span id="deleteSpan">
+                <a href="#" class="btn btn-danger ml-2 mb-2" onclick="confirmDelete(true)">Delete</a>
+            </span>
         </div>
     </form>
 </div>
@@ -78,24 +92,24 @@
                 {
                     TimeGap = true;
                     string WarningText = hours < 48 ? $"{(int)(hours + 0.5)} HOURS" : $"{(int)(hours / 24 + 0.5)} DAYS";
-            <tr style="border-top: solid 3px #000;">
-                <td colspan="4" class="text-center bg-warning font-weight-bold">@WarningText TIME GAP</td>
-            </tr>
+                    <tr style="border-top: solid 3px #000;">
+                        <td colspan="4" class="text-center bg-warning font-weight-bold">@WarningText TIME GAP</td>
+                    </tr>
                 }
                 timeLast = call.Time;
 
-            <tr @if (TimeGap) { <text> style="border-top: solid 3px #000;" </text>    }>
-                <td>@call.Time</td>
-                <td class="text-center" style="background-color: @statuscolor;">@call.Status</td>
-                <td class="text-center" style="background-color: @versioncolor;">@call.Version</td>
-                <td>@call.License</td>
-            </tr>
-                }
+                <tr @if (TimeGap) { <text> style="border-top: solid 3px #000;" </text> }>
+                    <td>@call.Time</td>
+                    <td class="text-center" style="background-color: @statuscolor;">@call.Status</td>
+                    <td class="text-center" style="background-color: @versioncolor;">@call.Version</td>
+                    <td>@call.License</td>
+                </tr>
+            }
             @if (Model.Calls.Count() == 0)
-                {
-            <tr>
-                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">No Calls</td>
-            </tr>
+            {
+                <tr>
+                    <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">No Calls</td>
+                </tr>
             }
         </tbody>
         <tfoot class="thead-dark">
@@ -108,3 +122,7 @@
         </tfoot>
     </table>
 </div>
+
+@section Scripts {
+    <script src="~/js/CustomScript.js"></script>
+}

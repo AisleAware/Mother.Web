@@ -25,12 +25,12 @@ namespace Mother.Web.Controllers
 
         [Route("")]
         [Route("Home/Index")]
-        public async Task<IActionResult> Index(int? days, int? type, int? active, int? sortby)
+        public async Task<IActionResult> Index(int? days, int? product, int? active, int? sortby)
         {
             ProductId productId;
             try
             {
-                productId = (ProductId)type;
+                productId = (ProductId)product;
             }
             catch
             {
@@ -66,7 +66,7 @@ namespace Mother.Web.Controllers
             return View(model);
         }
 
-        [Route("Home/Details")]
+        [HttpGet("Home/Details")]
         public async Task<IActionResult> Details(string name, int? status, DateTime? datestart)
         {
             StatusId statusId;
@@ -92,6 +92,17 @@ namespace Mother.Web.Controllers
             model.Calls = calls.Reverse();  // Show the latest calls at the top of the list
 
             return View(model);
+        }
+
+        [HttpPost("Home/Delete")]
+        public async Task<IActionResult> Delete(string name)
+        {
+            var model = new DetailsViewModel();
+            model.Name = name;
+
+            await _motherRepository.DeleteNamed(name);
+
+            return RedirectToAction("index");
         }
 
         [Route("Home/Error")]

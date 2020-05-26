@@ -19,5 +19,6 @@ namespace Mother.Web.Models
         Task<MotherTableViewModel> BuildViewModels(int DaysToInclude, ProductId productId);
         Task<RepoInfo> AddMotherInfo(Request requestInfo);
         Task DeleteAll();
+        Task DeleteNamed(string callerName);
     }
 }

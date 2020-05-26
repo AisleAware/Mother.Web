@@ -14,7 +14,7 @@ namespace Mother.Web.ViewModels
         public int FilterDays { get; set; }
         [Display(Name = "Filter Product:")]
 
-        public ProductId FilterType { get; set; }
+        public ProductId FilterProduct { get; set; }
         [Display(Name = "Filter Active:")]
         public ActiveId FilterActive { get; set; }
         [Display(Name = "Sort By:")]

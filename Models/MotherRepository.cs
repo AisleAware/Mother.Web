@@ -130,7 +130,7 @@ namespace Mother.Web.Models
 
             MotherTableViewModel model = new MotherTableViewModel();
             model.FilterDays = DaysToInclude;
-            model.FilterType = productId;
+            model.FilterProduct = productId;
 
             return await Task<MotherTableViewModel>.Run(() =>
             {
@@ -201,6 +201,13 @@ namespace Mother.Web.Models
         public async Task DeleteAll()
         {
             var result = await apiDbContext.MotherInfo.DeleteAsync();
+            await apiDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteNamed(string callerName)
+        {
+            var result = await apiDbContext.MotherInfo.Where(info => info.ProductName == callerName).DeleteAsync();
+            await apiDbContext.SaveChangesAsync();
         }
     }
 }
