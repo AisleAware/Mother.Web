@@ -10,6 +10,22 @@
     <h1>Calls from @Model.Name</h1>
     <h4>@DateTime.Now</h4>
 </div>
+<div class="row justify-content-center align-items-center">
+    <form enctype="multipart/form-data" asp-controller="home" asp-action="delete" asp-route-name="@Model.Name" method="post" class="form mt-2">
+        <div class="form-group row">
+            @*<button type="submit" class="btn btn-danger ml-2 mb-2" onclick="return confirm('Are you sure yo want to delete caller @Model.Name')">Delete</button>*@
+
+            <span id="confirmDeleteSpan" style="display:none;">
+                <span>Are you sure you want to delete?</span>
+                <button type="submit" class="btn btn-danger ml-2 mb-2">Yes</button>
+                <a href="#" class="btn btn-primary ml-2 mb-2" onclick="confirmDelete(false)">No</a>
+            </span>
+            <span id="deleteSpan">
+                <a href="#" class="btn btn-danger" onclick="confirmDelete(true)">Delete</a>
+            </span>
+        </div>
+    </form>
+</div>
 <hr />
 <script type="text/javascript">
     $(document).ready(function () {
@@ -35,22 +51,6 @@
                 <input type="date" name="datestart" id="datefilter" asp-for="FilterTimeStart" class="mb-2" />
             </div>
             @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
-        </div>
-    </form>
-</div>
-<div class="row justify-content-center align-items-center">
-    <form enctype="multipart/form-data" asp-controller="home" asp-action="delete" asp-route-name="@Model.Name" method="post" class="form mt-2">
-        <div class="form-group row">
-            @*<button type="submit" class="btn btn-danger ml-2 mb-2" onclick="return confirm('Are you sure yo want to delete caller @Model.Name')">Delete</button>*@
-
-            <span id="confirmDeleteSpan" style="display:none;">
-                <span>Are you sure you want to delete?</span>
-                <button type="submit" class="btn btn-danger ml-2 mb-2">Yes</button>
-                <a href="#" class="btn btn-primary ml-2 mb-2" onclick="confirmDelete(false)">No</a>
-            </span>
-            <span id="deleteSpan">
-                <a href="#" class="btn btn-danger" onclick="confirmDelete(true)">Delete</a>
-            </span>
         </div>
     </form>
 </div>
@@ -94,24 +94,24 @@
                 {
                     TimeGap = true;
                     string WarningText = hours < 48 ? $"{(int)(hours + 0.5)} HOURS" : $"{(int)(hours / 24 + 0.5)} DAYS";
-                    <tr style="border-top: solid 3px #000;">
-                        <td colspan="4" class="text-center bg-warning font-weight-bold">@WarningText TIME GAP</td>
-                    </tr>
+            <tr style="border-top: solid 3px #000;">
+                <td colspan="4" class="text-center bg-warning font-weight-bold">@WarningText TIME GAP</td>
+            </tr>
                 }
                 timeLast = call.Time;
 
-                <tr @if (TimeGap) { <text> style="border-top: solid 3px #000;" </text> }>
-                    <td>@call.Time</td>
-                    <td class="text-center" style="background-color: @statuscolor;">@call.Status</td>
-                    <td class="text-center" style="background-color: @versioncolor;">@call.Version</td>
-                    <td>@call.License</td>
-                </tr>
+            <tr @if (TimeGap) { <text> style="border-top: solid 3px #000;" </text>  }>
+                <td>@call.Time</td>
+                <td class="text-center" style="background-color: @statuscolor;">@call.Status</td>
+                <td class="text-center" style="background-color: @versioncolor;">@call.Version</td>
+                <td>@call.License</td>
+            </tr>
             }
             @if (Model.Calls.Count() == 0)
             {
-                <tr>
-                    <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">No Calls</td>
-                </tr>
+            <tr>
+                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">No Calls</td>
+            </tr>
             }
         </tbody>
         <tfoot class="thead-dark">
