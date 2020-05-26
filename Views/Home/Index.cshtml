@@ -102,6 +102,12 @@
                 case SortId.Recent:
                     Locations = Model.Locations.OrderByDescending(loc => loc.repoInfo.Time).ToList();
                     break;
+                case SortId.Errors:
+                    Locations = Model.Locations.OrderByDescending(loc => loc.ErrorCount).ToList();
+                    break;
+                case SortId.Warnings:
+                    Locations = Model.Locations.OrderByDescending(loc => loc.WarningCount).ToList();
+                    break;
                 default:
                     Locations = Model.Locations;
                     break;

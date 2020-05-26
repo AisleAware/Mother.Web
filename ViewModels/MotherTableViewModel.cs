@@ -35,6 +35,8 @@ namespace Mother.Web.ViewModels
         Product = 1,
         Name = 2,
         Recent = 3,
+        Errors = 4,
+        Warnings = 5,
     }
 
     public class Location
