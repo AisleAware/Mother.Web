@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,14 @@ namespace Mother.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApiDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("DBConnection")));
+            services.AddDbContext<ApiDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("DBConnectionApi")));
+            services.AddDbContext<AuthDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("DBConnectionAuth")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequireNonAlphanumeric = false;
+            })
+            .AddEntityFrameworkStores<AuthDbContext>();
 
             services.AddScoped<IMotherRepository, MotherRepository>();
 
@@ -44,9 +52,11 @@ namespace Mother.Web
             }
             app.UseStaticFiles();
 
+            app.UseAuthentication();
+
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
