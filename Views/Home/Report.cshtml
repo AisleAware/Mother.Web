@@ -1,0 +1,210 @@
+﻿@model Mother.Web.ViewModels.MotherTableViewModel
+@using AisleAware.Common.Mother
+@using Mother.Web.ViewModels
+
+@{
+    ViewData["Title"] = "Mother Report";
+    List<int> DaySelectChoices = new List<int>() { 1, 2, 3, 7, 14, 21, 30, 90, 180 };
+}
+
+<div class="text-center">
+    <h1>Mother Report</h1>
+    <h4>@DateTime.Now</h4>
+</div>
+<hr />
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#filterform select').change(function () {
+            this.form.submit();
+        });
+        $('t')
+
+        $('#resetform').on("click", function () {
+            $("#filterform select").val("-1").change();
+        });
+    });
+</script>
+<div class="row justify-content-center align-items-center">
+    <form enctype="multipart/form-data" id="filterform" asp-controller="home" asp-action="report" method="get" class="form">
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="FilterDays" class="col col-form-label"></label>
+                <div class="form-group mx-3 mb-0">
+                    <select name="days" id="dayfilter" asp-for="FilterDays" class="custom-select mr-5" asp-items="@(new SelectList(DaySelectChoices))">
+                        @*<option value="">Days</option>*@
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="FilterProduct" class="col col-form-label"></label>
+                <div class="form-group mx-3 mb-0">
+                    <select name="product" id="productfilter" asp-for="FilterProduct" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<ProductId>()">
+                        @*<option value="">Product</option>*@
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group">
+                <label asp-for="FilterActive" class="col col-form-label"></label>
+                <div class="form-group mx-3 mb-2">
+                    <select name="active" id="activefilter" asp-for="FilterActive" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<ActiveId>()">
+                        @*<option value="">Currently</option>*@
+                    </select>
+                </div>
+            </div>
+            @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
+            <div class="form-group">
+                <label asp-for="SortBy" class="col col-form-label"></label>
+                <div class="form-group mx-3 mb-2">
+                    <select name="sortby" id="sortfilter" asp-for="SortBy" class="custom-select mr-2" asp-items="Html.GetEnumSelectList<SortId>()">
+                        @*<option value="">Sort by</option>*@
+                    </select>
+                </div>
+                @*<button type="submit" class="btn btn-primary ml-2 mb-2">Change</button>*@
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <input id="resetform" type="button" value="Reset" class="col-6" />
+        </div>
+    </form>
+</div>
+<hr />
+<style>
+    tbody, thead, tfoot {
+        border: solid 3px #000;
+    }
+</style>
+<div class="row justify-content-center">
+    <table class="table table-bordered table-sm w-auto">
+        <thead class="thead-dark">
+            <tr>
+                <th colspan="4" scope="colgroup" class="text-center" style="background-color: blue;">Caller Name</th>
+            </tr>
+            <tr>
+                <th scope="col">Time</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Version</th>
+                <th scope="col">License</th>
+            </tr>
+        </thead>
+
+        @{
+            List<Location> Locations;
+            switch (Model.SortBy)
+            {
+                case SortId.Product:
+                    Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductType).ToList();
+                    break;
+                case SortId.Name:
+                    Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductName).ToList();
+                    break;
+                case SortId.Recent:
+                    Locations = Model.Locations.OrderByDescending(loc => loc.repoInfo.Time).ToList();
+                    break;
+                case SortId.Errors:
+                    Locations = Model.Locations.OrderByDescending(loc => loc.ErrorCount).ToList();
+                    break;
+                case SortId.Warnings:
+                    Locations = Model.Locations.OrderByDescending(loc => loc.WarningCount).ToList();
+                    break;
+                default:
+                    Locations = Model.Locations;
+                    break;
+            }
+        }
+
+
+        @foreach (var info in Locations)
+        {
+            DateTime RightNow = DateTime.Now;
+            bool IsActive = (RightNow - info.repoInfo.Time).TotalHours < 1.5;
+
+            if (Model.FilterActive == ActiveId.Both
+             || Model.FilterActive == ActiveId.Active && IsActive
+             || Model.FilterActive == ActiveId.Inactive && !IsActive)
+            {
+                <tbody>
+                    @{
+                        string statuscolor;
+                        string versioncolor = "lightyellow";
+                        switch (info.repoInfo.Status)
+                        {
+                            case StatusId.Active: statuscolor = "limegreen"; break;
+                            case StatusId.AlarmOn: statuscolor = "orangered"; break;
+                            case StatusId.AlarmOff: statuscolor = "gold"; break;
+                            case StatusId.Error: statuscolor = "red"; break;
+                            case StatusId.Event: statuscolor = "violet"; break;
+                            case StatusId.Idle: statuscolor = "lightgreen"; break;
+                            case StatusId.Normal: statuscolor = "lightyellow"; break;
+                            case StatusId.Shutdown: statuscolor = "darkgray"; break;
+                            case StatusId.Start: statuscolor = "lightgray"; break;
+                            case StatusId.All: statuscolor = "lime"; break;
+                            case StatusId.Warning: statuscolor = "orange"; break;
+                            default: statuscolor = "gray"; break;
+                        }
+
+                        <tr>
+                            <th colspan="4" scope="row" class="text-center bg-primary">
+                                <a class="text-white" asp-controller="home" asp-action="details" asp-route-name="@info.repoInfo.ProductName">@info.repoInfo.ProductName</a>
+                            </th>
+                        </tr>
+                        if (info.IsNewContact)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: limegreen;">New Contact</td>
+                            </tr>
+                        }
+                        if (IsActive)
+                        {
+                            <tr>
+                                <td colspan="4" scope="row" class="text-center" style="background-color: palegreen;">Up since @info.lastStartTime</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">Contact Lost</td>
+                            </tr>
+                        }
+                        if (info.IsNewVersion)
+                        {
+                            versioncolor = "aquamarine";
+                            <tr>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: @versioncolor;">New Version</td>
+                            </tr>
+                        }
+                        if (info.WarningCount > 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: yellow;">@info.WarningCount Warnings</td>
+                            </tr>
+                        }
+                        if (info.ErrorCount > 0)
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: red;">@info.ErrorCount Errors</td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td class="pr-2" style="background-color: lightyellow;">@info.repoInfo.Time</td>
+                            <td class="text-center px-2" style="background-color: @statuscolor;">@info.repoInfo.Status</td>
+                            <td class="text-center px-2" style="background-color: @versioncolor;">@info.repoInfo.Version</td>
+                            <td class="pr-2" style="background-color: lightyellow;">@info.repoInfo.License</td>
+                        </tr>
+                    }
+                </tbody>
+            }
+        }
+
+        <tfoot class="thead-dark">
+            <tr>
+                <th scope="col">Time</th>
+                <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Version</th>
+                <th scope="col">License</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -19,11 +19,14 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsableNavBar">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a asp-action="index" asp-controller="home" class="nav-link">Home</a>
-                    </li>
-                </ul>
+                @if (signInManager.IsSignedIn(User))
+                {
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a asp-action="report" asp-controller="home" class="nav-link">Report</a>
+                        </li>
+                    </ul>
+                }
                 <ul class="navbar-nav ml-auto">
                     @if (signInManager.IsSignedIn(User))
                     {

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AisleAware.Common.Mother;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
@@ -15,18 +16,38 @@ namespace Mother.Web.Controllers
     public class HomeController : Controller
     {
         private readonly IMotherRepository _motherRepository;
+        private readonly SignInManager<IdentityUser> signInManager;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IMotherRepository motherRepository, ILogger<HomeController> logger)
+        public HomeController(IMotherRepository motherRepository, SignInManager<IdentityUser> signInManager, ILogger<HomeController> logger)
         {
             _motherRepository = motherRepository;
+            this.signInManager = signInManager;
             _logger = logger;
         }
 
         [Route("")]
-        [Route("Home/Index")]
-        public async Task<IActionResult> Index(int? days, int? product, int? active, int? sortby)
+        [Route("Index")]
+        public IActionResult Index()
         {
+            // Bypass index view if already logged in
+            if (signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("report");
+            }
+
+            return View();
+        }
+
+        [Route("Home/Report")]
+        public async Task<IActionResult> Report(int? days, int? product, int? active, int? sortby)
+        {
+            // Reject attempts to bypass login
+            if(!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("index");
+            }
+
             ProductId productId;
             try
             {
@@ -69,6 +90,12 @@ namespace Mother.Web.Controllers
         [HttpGet("Home/Details")]
         public async Task<IActionResult> Details(string name, int? status, DateTime? datestart)
         {
+            // Reject attempts to bypass login
+            if (!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("index");
+            }
+
             StatusId statusId;
             try
             {
@@ -97,6 +124,12 @@ namespace Mother.Web.Controllers
         [HttpPost("Home/Delete")]
         public async Task<IActionResult> Delete(string name)
         {
+            // Reject attempts to bypass login
+            if (!signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("index");
+            }
+
             var model = new DetailsViewModel();
             model.Name = name;
 

@@ -49,7 +49,7 @@ namespace EmployeeManagementAspNetCore.Controllers
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("report", "home");
                 }
 
                 foreach (var error in result.Errors)
@@ -77,7 +77,7 @@ namespace EmployeeManagementAspNetCore.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("report", "home");
                 }
 
                 // Add error to the ModelState object to be later used by the asp-validation-summary tag helper in the Register.cshtml view
