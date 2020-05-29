@@ -21,7 +21,7 @@ namespace EmployeeManagementAspNetCore.Controllers
             this.signInManager = signInManager;
         }
 
-        [HttpPost]
+        [HttpPost("account/logout")]
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
