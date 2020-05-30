@@ -74,7 +74,7 @@ namespace EmployeeManagementAspNetCore.Controllers
 
         [HttpPost("account/login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -82,7 +82,17 @@ namespace EmployeeManagementAspNetCore.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("report", "home");
+                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        //Important!  Use LocalRedirect() instead of Redirect() to avoid open redirect attacks through malicious external web sites
+                        //return LocalRedirect(returnUrl);    // Creates an exception when a non-local redirect is attempted
+
+                        return Redirect(returnUrl);         // Avoids the exception when paired with the Url.IsLocalUrl check above
+                    }
+                    else
+                    {
+                        return RedirectToAction("report", "home");
+                    }
                 }
 
                 // Add error to the ModelState object to be later used by the asp-validation-summary tag helper in the Register.cshtml view
