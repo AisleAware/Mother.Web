@@ -13,7 +13,7 @@ namespace Mother.Web.ViewModels
         public string Name { get; set; }
         [Display(Name = "Filter Status:")]
         public StatusId FilterStatus { get; set; }
-        [Display(Name = "Filter Days:")]
+        [Display(Name = "Filter Date:")]
         public DateTime FilterTimeStart { get; set; }
         public DateTime FilterTimeEnd { get; set; }
         public IEnumerable<RepoInfo> Calls { get; set; }

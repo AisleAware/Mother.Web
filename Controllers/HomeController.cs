@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AisleAware.Common.Mother;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -28,6 +29,7 @@ namespace Mother.Web.Controllers
 
         [Route("")]
         [Route("Index")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             // Bypass index view if already logged in
@@ -42,12 +44,6 @@ namespace Mother.Web.Controllers
         [Route("Home/Report")]
         public async Task<IActionResult> Report(int? days, int? product, int? active, int? sortby)
         {
-            // Reject attempts to bypass login
-            if(!signInManager.IsSignedIn(User))
-            {
-                return RedirectToAction("index");
-            }
-
             ProductId productId;
             try
             {
@@ -90,12 +86,6 @@ namespace Mother.Web.Controllers
         [HttpGet("Home/Details")]
         public async Task<IActionResult> Details(string name, int? status, DateTime? datestart)
         {
-            // Reject attempts to bypass login
-            if (!signInManager.IsSignedIn(User))
-            {
-                return RedirectToAction("index");
-            }
-
             StatusId statusId;
             try
             {
@@ -124,12 +114,6 @@ namespace Mother.Web.Controllers
         [HttpPost("Home/Delete")]
         public async Task<IActionResult> Delete(string name)
         {
-            // Reject attempts to bypass login
-            if (!signInManager.IsSignedIn(User))
-            {
-                return RedirectToAction("index");
-            }
-
             var model = new DetailsViewModel();
             model.Name = name;
 
@@ -140,6 +124,7 @@ namespace Mother.Web.Controllers
 
         [Route("Home/Error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [AllowAnonymous]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
