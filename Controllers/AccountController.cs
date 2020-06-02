@@ -9,8 +9,9 @@ using Mother.Web.ViewModels;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace EmployeeManagementAspNetCore.Controllers
+namespace Mother.Web.Controllers
 {
+    [Route("[controller]")]
     public class AccountController : Controller
     {
         private readonly UserManager<IdentityUser> userManager;
@@ -22,23 +23,23 @@ namespace EmployeeManagementAspNetCore.Controllers
             this.signInManager = signInManager;
         }
 
-        [HttpPost("account/logout")]
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction("index", "home");
         }
 
-        [HttpGet("account/register")]
+        [HttpGet("register")]
         [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
         }
 
-        //[HttpGet("account/isemailinuse")]
-        //[HttpPost("account/isemailinuse")]
-        [Route("account/isemailinuse")]
+        //[HttpGet("isemailinuse")]
+        //[HttpPost("isemailinuse")]
+        [Route("isemailinuse")]
         [AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
         public async Task<IActionResult> IsEmailInUse(string email)
@@ -55,7 +56,7 @@ namespace EmployeeManagementAspNetCore.Controllers
             }
         }
 
-        [HttpPost("account/register")]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
@@ -84,14 +85,14 @@ namespace EmployeeManagementAspNetCore.Controllers
             return View();
         }
 
-        [HttpGet("account/login")]
+        [HttpGet("login")]
         [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
-        [HttpPost("account/login")]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
