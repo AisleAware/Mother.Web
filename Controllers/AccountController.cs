@@ -36,6 +36,25 @@ namespace EmployeeManagementAspNetCore.Controllers
             return View();
         }
 
+        //[HttpGet("account/isemailinuse")]
+        //[HttpPost("account/isemailinuse")]
+        [Route("account/isemailinuse")]
+        [AcceptVerbs("Get", "Post")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsEmailInUse(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return Json(true);
+            }
+            else
+            {
+                return Json($"Email {email} is already in use");
+            }
+        }
+
         [HttpPost("account/register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
