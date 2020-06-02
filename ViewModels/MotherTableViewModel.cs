@@ -37,6 +37,7 @@ namespace Mother.Web.ViewModels
         Recent = 3,
         Errors = 4,
         Warnings = 5,
+        Expiring = 6,
     }
 
     public class Location

@@ -89,6 +89,12 @@
         case SortId.Warnings:
             Locations = Model.Locations.OrderByDescending(loc => loc.WarningCount).ToList();
             break;
+        case SortId.Expiring:
+            Locations = Model.Locations.OrderByDescending(loc => loc.IsLicenseExpiring).ToList();
+            // TODO: Sort according to the closest to expiring at the top
+            // Expected format: "Exp: 20 days"
+            //Locations = Model.Locations.OrderByDescending(loc => loc.IsLicenseExpiring).ThenBy(loc => Int32.Parse(loc.repoInfo.License.Split(' ')[1])).ToList();
+            break;
         default:
             Locations = Model.Locations;
             break;
