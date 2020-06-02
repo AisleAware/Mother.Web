@@ -70,9 +70,33 @@
     </form>
 </div>
 <hr />
+@{
+    List<Location> Locations;
+    switch (Model.SortBy)
+    {
+        case SortId.Product:
+            Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductType).ToList();
+            break;
+        case SortId.Name:
+            Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductName).ToList();
+            break;
+        case SortId.Recent:
+            Locations = Model.Locations.OrderByDescending(loc => loc.repoInfo.Time).ToList();
+            break;
+        case SortId.Errors:
+            Locations = Model.Locations.OrderByDescending(loc => loc.ErrorCount).ToList();
+            break;
+        case SortId.Warnings:
+            Locations = Model.Locations.OrderByDescending(loc => loc.WarningCount).ToList();
+            break;
+        default:
+            Locations = Model.Locations;
+            break;
+    }
+}
 <style>
     tbody, thead, tfoot {
-        border: solid 3px #000;
+        border: solid 3px black;
     }
 </style>
 <div class="row justify-content-center">
@@ -88,32 +112,6 @@
                 <th scope="col">License</th>
             </tr>
         </thead>
-
-        @{
-            List<Location> Locations;
-            switch (Model.SortBy)
-            {
-                case SortId.Product:
-                    Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductType).ToList();
-                    break;
-                case SortId.Name:
-                    Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductName).ToList();
-                    break;
-                case SortId.Recent:
-                    Locations = Model.Locations.OrderByDescending(loc => loc.repoInfo.Time).ToList();
-                    break;
-                case SortId.Errors:
-                    Locations = Model.Locations.OrderByDescending(loc => loc.ErrorCount).ToList();
-                    break;
-                case SortId.Warnings:
-                    Locations = Model.Locations.OrderByDescending(loc => loc.WarningCount).ToList();
-                    break;
-                default:
-                    Locations = Model.Locations;
-                    break;
-            }
-        }
-
 
         @foreach (var info in Locations)
         {
@@ -164,7 +162,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: orangered;">Contact Lost</td>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: orangered;">Contact Lost</td>
                             </tr>
                         }
                         if (info.IsNewVersion)
@@ -183,11 +181,11 @@
                         if (info.ErrorCount > 0)
                         {
                             <tr>
-                                <td colspan="4" class="text-center font-weight-bold text-white" style="background-color: red;">@info.ErrorCount Errors</td>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: red;">@info.ErrorCount Errors</td>
                             </tr>
                         }
 
-                        <tr>
+                        <tr class="mb-5">
                             <td class="pr-2" style="background-color: lightyellow;">@info.repoInfo.Time</td>
                             <td class="text-center px-2" style="background-color: @statuscolor;">@info.repoInfo.Status</td>
                             <td class="text-center px-2" style="background-color: @versioncolor;">@info.repoInfo.Version</td>
