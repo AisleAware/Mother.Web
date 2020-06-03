@@ -16,7 +16,8 @@ namespace Mother.Web.ViewModels
         }
 
         public string Id { get; set; }
-
+        
+        [Display(Name = "Role Name")]
         [Required(ErrorMessage = "Role Name is required")]
         public string RoleName { get; set; }
 

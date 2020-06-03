@@ -132,11 +132,12 @@ namespace Mother.Web.Controllers
                 return View("NotFound");
             }
 
-            var model = new List<UserRoleViewModel>();
+            // Create a new view model with the role name that corresponsd to the given roleId
+            var model = new UserRoleViewModel((await roleManager.FindByIdAsync(roleId)).Name);
 
             foreach (var user in await userManager.Users.ToListAsync())
             {
-                var userRoleViewModel = new UserRoleViewModel
+                var userRoleViewModel = new UserRoleDetails
                 {
                     UserId = user.Id,
                     UserName = user.UserName
@@ -151,14 +152,14 @@ namespace Mother.Web.Controllers
                     userRoleViewModel.IsSelected = false;
                 }
 
-                model.Add(userRoleViewModel);
+                model.Users.Add(userRoleViewModel);
             }
 
             return View(model);
         }
 
         [HttpPost("editusersinrole")]
-        public async Task<IActionResult> EditUsersInRole(List<UserRoleViewModel> model, string roleId)
+        public async Task<IActionResult> EditUsersInRole(UserRoleViewModel model, string roleId)
         {
             var role = await roleManager.FindByIdAsync(roleId);
 
@@ -168,17 +169,17 @@ namespace Mother.Web.Controllers
                 return View("NotFound");
             }
 
-            for (int i = 0; i < model.Count; i++)
+            for (int i = 0; i < model.Users.Count; i++)
             {
-                var user = await userManager.FindByIdAsync(model[i].UserId);
+                var user = await userManager.FindByIdAsync(model.Users[i].UserId);
 
                 IdentityResult result = null;
 
-                if (model[i].IsSelected && !(await userManager.IsInRoleAsync(user, role.Name)))
+                if (model.Users[i].IsSelected && !(await userManager.IsInRoleAsync(user, role.Name)))
                 {
                     result = await userManager.AddToRoleAsync(user, role.Name);
                 }
-                else if (!model[i].IsSelected && await userManager.IsInRoleAsync(user, role.Name))
+                else if (!model.Users[i].IsSelected && await userManager.IsInRoleAsync(user, role.Name))
                 {
                     result = await userManager.RemoveFromRoleAsync(user, role.Name);
                 }
@@ -189,7 +190,7 @@ namespace Mother.Web.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (i < (model.Count - 1))
+                    if (i < (model.Users.Count - 1))
                         continue;
                     else
                         return RedirectToAction("EditRole", new { Id = roleId });
