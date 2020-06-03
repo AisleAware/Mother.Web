@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Mother.Web.Controllers
 {
+    [Authorize(Roles = "Admin")]    // Only users who have the Admin role can access these actions
     [Route("[controller]")]
     public class AdministrationController : Controller
     {
