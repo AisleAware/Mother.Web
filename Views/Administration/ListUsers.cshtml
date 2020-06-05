@@ -31,12 +31,12 @@
                         <span>Are you sure you want to delete?</span>
                         <button type="submit" class="btn btn-danger">Yes</button>
                         <a href="#/" class="btn btn-primary"
-                           onclick="confirmDelete('@user.Id', false);">No</a>
+                           onclick="confirmDeleteUnique('@user.Id', false);">No</a>
                     </span>
 
                     <span id="deleteSpan_@user.Id">
                         <a href="#/" class="btn btn-danger"
-                           onclick="confirmDelete('@user.Id', true);">Delete</a>
+                           onclick="confirmDeleteUnique('@user.Id', true);">Delete</a>
                     </span>
                 </form>
             </div>

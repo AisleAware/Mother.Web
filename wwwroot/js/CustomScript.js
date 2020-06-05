@@ -12,7 +12,7 @@
     }
 }
 
-function confirmDelete(uniqueId, isDeleteClicked) {
+function confirmDeleteUnique(uniqueId, isDeleteClicked) {
     var deleteSpan = 'deleteSpan_' + uniqueId;
     var confirmDeleteSpan = 'confirmDeleteSpan_' + uniqueId;
 

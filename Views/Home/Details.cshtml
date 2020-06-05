@@ -15,8 +15,8 @@
     <div class="row justify-content-center align-items-center">
         <form enctype="multipart/form-data" asp-controller="home" asp-action="delete" asp-route-name="@Model.Name" method="post" class="form mt-2">
             <div class="form-group row">
-                @*<button type="submit" class="btn btn-danger ml-2 mb-2" onclick="return confirm('Are you sure yo want to delete caller @Model.Name')">Delete</button>*@
-                <span id="confirmDeleteSpan" style="display:none;">
+                @*<button type="submit" class="btn btn-danger ml-2 mb-2" onclick="return confirm('Are you sure you want to delete caller @Model.Name')">Delete</button>*@
+                <span id="confirmDeleteSpan" style="display:none">
                     <span>Are you sure you want to delete?</span>
                     <button type="submit" class="btn btn-danger ml-2 mb-2">Yes</button>
                     <a href="#" class="btn btn-primary ml-2 mb-2" onclick="confirmDelete(false)">No</a>
