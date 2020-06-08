@@ -45,6 +45,14 @@ namespace Mother.Web
                                 .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("DeleteRolePolicy", policy => policy.RequireClaim("Delete Role")
+                                                                      .RequireClaim("Create Role"));
+
+                options.AddPolicy("AdminRolePolicy", policy => policy.RequireRole("Admin"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

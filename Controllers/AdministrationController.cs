@@ -12,7 +12,8 @@ using Mother.Web.Models;
 
 namespace Mother.Web.Controllers
 {
-    [Authorize(Roles = "Admin")]    // Only users who have the Admin role can access these actions
+    //[Authorize(Roles = "Admin")]    // Only users who have the Admin role can access these actions
+    [Authorize(Policy = "AdminRolePolicy")]                     // Claims based constraint, the exact same result as above
     [Route("[controller]")]
     public class AdministrationController : Controller
     {
