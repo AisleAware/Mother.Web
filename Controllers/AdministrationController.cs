@@ -26,6 +26,13 @@ namespace Mother.Web.Controllers
             this.userManager = userManager;
         }
 
+        [HttpGet("AccessDenied")]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
         [HttpGet("ManageUserClaims")]
         public async Task<IActionResult> ManageUserClaims(string userId)
         {

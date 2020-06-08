@@ -126,12 +126,5 @@ namespace Mother.Web.Controllers
 
             return View(model);
         }
-
-        [HttpGet("AccessDenied")]
-        [AllowAnonymous]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
     }
 }
