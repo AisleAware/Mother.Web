@@ -16,6 +16,6 @@ namespace Mother.Web.ViewModels
         [Display(Name = "Filter Date:")]
         public DateTime FilterTimeStart { get; set; }
         public DateTime FilterTimeEnd { get; set; }
-        public IEnumerable<RepoInfo> Calls { get; set; }
+        public IEnumerable<CallInfo> Calls { get; set; }
     }
 }

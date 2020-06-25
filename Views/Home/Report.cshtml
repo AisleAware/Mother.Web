@@ -75,13 +75,13 @@
     switch (Model.SortBy)
     {
         case SortId.Product:
-            Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductType).ToList();
+            Locations = Model.Locations.OrderBy(loc => loc.Type).ToList();
             break;
         case SortId.Name:
-            Locations = Model.Locations.OrderBy(loc => loc.repoInfo.ProductName).ToList();
+            Locations = Model.Locations.OrderBy(loc => loc.Name).ToList();
             break;
         case SortId.Recent:
-            Locations = Model.Locations.OrderByDescending(loc => loc.repoInfo.Time).ToList();
+            Locations = Model.Locations.OrderByDescending(loc => loc.callInfo.Time).ToList();
             break;
         case SortId.Errors:
             Locations = Model.Locations.OrderByDescending(loc => loc.ErrorCount).ToList();
@@ -119,10 +119,10 @@
             </tr>
         </thead>
 
-        @foreach (var info in Locations)
+        @foreach (var loc in Locations)
         {
             DateTime RightNow = DateTime.Now;
-            bool IsActive = (RightNow - info.repoInfo.Time).TotalHours < 1.5;
+            bool IsActive = (RightNow - loc.callInfo.Time).TotalHours < 1.5;
 
             if (Model.FilterActive == ActiveId.Both
              || Model.FilterActive == ActiveId.Active && IsActive
@@ -132,7 +132,7 @@
                     @{
                         string statuscolor;
                         string versioncolor = "lightyellow";
-                        switch (info.repoInfo.Status)
+                        switch (loc.callInfo.Status)
                         {
                             case StatusId.Active: statuscolor = "limegreen"; break;
                             case StatusId.AlarmOn: statuscolor = "orangered"; break;
@@ -150,10 +150,10 @@
 
                         <tr>
                             <th colspan="4" scope="row" class="text-center bg-primary">
-                                <a class="text-white" asp-controller="home" asp-action="details" asp-route-name="@info.repoInfo.ProductName">@info.repoInfo.ProductName</a>
+                                <a class="text-white" asp-controller="home" asp-action="details" asp-route-name="@loc.Name">@loc.Name</a>
                             </th>
                         </tr>
-                        if (info.IsNewContact)
+                        if (loc.IsNewContact)
                         {
                             <tr>
                                 <td colspan="4" class="text-center font-weight-bold" style="background-color: limegreen;">New Contact</td>
@@ -162,7 +162,7 @@
                         if (IsActive)
                         {
                             <tr>
-                                <td colspan="4" scope="row" class="text-center" style="background-color: palegreen;">Up since @info.lastStartTime</td>
+                                <td colspan="4" scope="row" class="text-center" style="background-color: palegreen;">Up since @loc.lastStartTime</td>
                             </tr>
                         }
                         else
@@ -171,31 +171,31 @@
                                 <td colspan="4" class="text-center font-weight-bold" style="background-color: orangered;">Contact Lost</td>
                             </tr>
                         }
-                        if (info.IsNewVersion)
+                        if (loc.IsNewVersion)
                         {
                             versioncolor = "aquamarine";
                             <tr>
                                 <td colspan="4" class="text-center font-weight-bold" style="background-color: @versioncolor;">New Version</td>
                             </tr>
                         }
-                        if (info.WarningCount > 0)
+                        if (loc.WarningCount > 0)
                         {
                             <tr>
-                                <td colspan="4" class="text-center font-weight-bold" style="background-color: yellow;">@info.WarningCount Warnings</td>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: yellow;">@loc.WarningCount Warnings</td>
                             </tr>
                         }
-                        if (info.ErrorCount > 0)
+                        if (loc.ErrorCount > 0)
                         {
                             <tr>
-                                <td colspan="4" class="text-center font-weight-bold" style="background-color: red;">@info.ErrorCount Errors</td>
+                                <td colspan="4" class="text-center font-weight-bold" style="background-color: red;">@loc.ErrorCount Errors</td>
                             </tr>
                         }
 
                         <tr class="mb-5">
-                            <td class="pr-2" style="background-color: lightyellow;">@info.repoInfo.Time</td>
-                            <td class="text-center px-2" style="background-color: @statuscolor;">@info.repoInfo.Status</td>
-                            <td class="text-center px-2" style="background-color: @versioncolor;">@info.repoInfo.Version</td>
-                            <td class="pr-2" style="background-color: lightyellow;">@info.repoInfo.License</td>
+                            <td class="pr-2" style="background-color: lightyellow;">@loc.callInfo.Time</td>
+                            <td class="text-center px-2" style="background-color: @statuscolor;">@loc.callInfo.Status</td>
+                            <td class="text-center px-2" style="background-color: @versioncolor;">@loc.callInfo.Version</td>
+                            <td class="pr-2" style="background-color: lightyellow;">@loc.callInfo.License</td>
                         </tr>
                     }
                 </tbody>

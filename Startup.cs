@@ -37,7 +37,7 @@ namespace Mother.Web
             })
             .AddEntityFrameworkStores<AuthDbContext>();
 
-            services.AddScoped<IMotherRepository, MotherRepository>();
+            services.AddScoped<ICallRepository, CallRepository>();
 
             services.AddControllersWithViews(options => {
                 // Make all controllers require authorization by default.  Use [AllowAnonymous] to override individual controller actions.

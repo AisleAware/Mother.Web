@@ -42,7 +42,9 @@ namespace Mother.Web.ViewModels
 
     public class Location
     {
-        public RepoInfo repoInfo { get; set; }
+        public CallInfo callInfo { get; set; }
+        public string Name { get; set; }
+        public ProductId Type { get; set; }
         public DateTime lastStartTime { get; set; }
         public int WarningCount { get; set; }
         public int ErrorCount { get; set; }

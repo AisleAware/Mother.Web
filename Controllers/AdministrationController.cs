@@ -234,7 +234,7 @@ namespace Mother.Web.Controllers
                     return View("ListRoles");
                 }
                 // If the exception is DbUpdateException, we know we are not able to delete the role as there are users in the role being deleted
-                catch (DbUpdateException ex)
+                catch (DbUpdateException)
                 {
                     //Log the exception to a file. We discussed logging to a file using Nlog in Part 63 of ASP.NET Core tutorial
                     //logger.LogError($"Error deleting role : {ex}");

@@ -16,11 +16,11 @@ namespace Mother.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IMotherRepository _motherRepository;
+        private readonly ICallRepository _motherRepository;
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(IMotherRepository motherRepository, SignInManager<IdentityUser> signInManager, ILogger<HomeController> logger)
+        public HomeController(ICallRepository motherRepository, SignInManager<IdentityUser> signInManager, ILogger<HomeController> logger)
         {
             _motherRepository = motherRepository;
             this.signInManager = signInManager;

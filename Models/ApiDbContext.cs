@@ -12,6 +12,8 @@ namespace Mother.Web.Models
         {
         }
 
-        public DbSet<RepoInfo> MotherInfo { get; set; }
+        public DbSet<CallInfo> Calls { get; set; }
+
+        public DbSet<LocationInfo> Locations { get; set; }
     }
 }

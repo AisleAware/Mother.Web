@@ -16,12 +16,12 @@ namespace Mother.Web.Controllers
     [ApiController]
     public class MotherController : Controller
     {
-        private readonly IMotherRepository motherRepository;
+        private readonly ICallRepository callRepository;
         private readonly ILogger<HomeController> _logger;
 
-        public MotherController(IMotherRepository motherRepository, ILogger<HomeController> logger)
+        public MotherController(ICallRepository callRepository, ILogger<HomeController> logger)
         {
-            this.motherRepository = motherRepository;
+            this.callRepository = callRepository;
             _logger = logger;
         }
 
@@ -30,7 +30,7 @@ namespace Mother.Web.Controllers
         {
             try
             {
-                return Ok(await motherRepository.GetAllCalls());
+                return Ok(await callRepository.GetAllCalls());
             }
             catch (Exception)
             {
@@ -39,11 +39,11 @@ namespace Mother.Web.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<RepoInfo>> GetOneCall(int? id)
+        public async Task<ActionResult<CallInfo>> GetOneCall(int? id)
         {
             try
             {
-                var result = await motherRepository.GetCall(id ?? 1);
+                var result = await callRepository.GetCall(id ?? 1);
 
                 if (result == null)
                     return NotFound();
@@ -61,7 +61,7 @@ namespace Mother.Web.Controllers
         {
             try
             {
-                var result = await motherRepository.GetUniqueCallerNames();
+                var result = await callRepository.GetLocationNames();
 
                 if (result == null)
                     return NotFound();
@@ -74,13 +74,12 @@ namespace Mother.Web.Controllers
             }
         }
 
-        [HttpGet("unique")]
         [HttpGet("unique/latest")]
-        public async Task<ActionResult<RepoInfo>> GetLatestUnique()
+        public async Task<ActionResult<CallInfo>> GetLatestUnique()
         {
             try
             {
-                var result = await motherRepository.GetLatestUniqueCalls();
+                var result = await callRepository.GetLatestUniqueCalls();
 
                 if (result == null)
                     return NotFound();
@@ -93,9 +92,10 @@ namespace Mother.Web.Controllers
             }
         }
 
-        [HttpGet("unique/{filter}")]
-        public async Task<ActionResult<RepoInfo>> SearchLatestUniqueCalls(string name, int? type, int? status, DateTime? timestart, DateTime? timeend)
+        [HttpGet("{unique}")]
+        public async Task<ActionResult<CallInfo>> SearchLatestUniqueCalls(string name, int? type, int? status, DateTime? timestart, DateTime? timeend)
         {
+            // Example URL: http://localhost:61279/api/mother/unique?type=6
             ProductId productId;
             try
             {
@@ -117,7 +117,7 @@ namespace Mother.Web.Controllers
 
             try
             {
-                var result = await motherRepository.GetCalls(true, name, productId, statusId, timestart, timeend);
+                var result = await callRepository.GetCalls(true, name, productId, statusId, timestart, timeend);
 
                 if (result == null)
                     return NotFound();
@@ -131,11 +131,11 @@ namespace Mother.Web.Controllers
         }
 
         [HttpGet("product/{id:int}")]
-        public async Task<ActionResult<RepoInfo>> GetProduct(int Id)
+        public async Task<ActionResult<CallInfo>> GetProduct(int Id)
         {
             try
             {
-                var result = await motherRepository.GetProductCalls((ProductId)Id);
+                var result = await callRepository.GetProductCalls((ProductId)Id);
 
                 if (result == null)
                     return NotFound();
@@ -159,7 +159,7 @@ namespace Mother.Web.Controllers
                     return BadRequest();
                 }
 
-                return Ok(await motherRepository.AddMotherInfo(request));
+                return Ok(await callRepository.Add(request));
             }
             catch (Exception)
             {
@@ -172,7 +172,7 @@ namespace Mother.Web.Controllers
         {
             try
             {
-                await motherRepository.DeleteAll();
+                await callRepository.DeleteAll();
 
                 return Ok();
             }
