@@ -25,7 +25,7 @@ namespace Mother.Web.Migrations
                     b.Property<string>("License")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
@@ -38,6 +38,8 @@ namespace Mother.Web.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("Calls");
                 });
@@ -57,6 +59,13 @@ namespace Mother.Web.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Mother.Web.Models.CallInfo", b =>
+                {
+                    b.HasOne("Mother.Web.Models.LocationInfo", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
                 });
 #pragma warning restore 612, 618
         }

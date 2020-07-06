@@ -9,16 +9,16 @@ using Mother.Web.Models;
 namespace Mother.Web.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20200511225344_InitialSetup")]
-    partial class InitialSetup
+    [Migration("20200706203233_InitialState")]
+    partial class InitialState
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "3.1.4");
 
-            modelBuilder.Entity("Mother.Web.Models.RepoInfo", b =>
+            modelBuilder.Entity("Mother.Web.Models.CallInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -27,10 +27,7 @@ namespace Mother.Web.Migrations
                     b.Property<string>("License")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("ProductName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ProductType")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
@@ -44,7 +41,33 @@ namespace Mother.Web.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MotherInfo");
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Calls");
+                });
+
+            modelBuilder.Entity("Mother.Web.Models.LocationInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Mother.Web.Models.CallInfo", b =>
+                {
+                    b.HasOne("Mother.Web.Models.LocationInfo", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId");
                 });
 #pragma warning restore 612, 618
         }

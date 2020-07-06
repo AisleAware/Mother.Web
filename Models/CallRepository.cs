@@ -40,7 +40,7 @@ namespace Mother.Web.Models
             CallInfo callInfo = new CallInfo
             {
                 Time = DateTime.Now,
-                LocationId = location.Id,
+                Location = location,
                 Version = request.Version,
                 Status = request.Status,
                 License = request.License
@@ -82,7 +82,7 @@ namespace Mother.Web.Models
         {
             return await Task<IEnumerable<CallInfo>>.Run(() =>
             {
-                var groups = apiDbContext.Calls.AsEnumerable().GroupBy(call => call.LocationId);
+                var groups = apiDbContext.Calls.Include(call => call.Location).AsEnumerable().GroupBy(call => call.Location.Id);
 
                 List<CallInfo> calls = new List<CallInfo>();
                 foreach (var group in groups)
@@ -92,7 +92,7 @@ namespace Mother.Web.Models
             });
         }
 
-        public async Task<IEnumerable<CallInfo>> GetCalls(bool unique, string productName, ProductId productId, StatusId statusId, DateTime? timeStart, DateTime? timeEnd)
+        public async Task<IEnumerable<CallInfo>> GetCalls(bool unique, string locationName, ProductId productId, StatusId statusId, DateTime? timeStart, DateTime? timeEnd)
         {
             return await Task<IEnumerable<CallInfo>>.Run(() =>
             {
@@ -108,13 +108,13 @@ namespace Mother.Web.Models
                     query = query.Where(call => call.Time <= timeEnd);
 
                 // If the productName was given then add the filter to the query
-                if (!String.IsNullOrEmpty(productName))
+                if (!String.IsNullOrEmpty(locationName))
                 {
                     // Get the location that has the specified product name
-                    var location = apiDbContext.Locations.FirstOrDefault(loc => loc.Name.ToLower().Contains(productName.ToLower()));
+                    var location = apiDbContext.Locations.FirstOrDefault(loc => loc.Name.ToLower().Contains(locationName.ToLower()));
 
                     // Query all calls from that location
-                    query = query.Where(call => call.LocationId == location.Id);
+                    query = query.Where(call => call.Location.Id == location.Id);
                 }
 
                 // If the productType was given then add the filter to the query
@@ -124,7 +124,7 @@ namespace Mother.Web.Models
                     var locations = apiDbContext.Locations.Where(loc => loc.Type == productId).Select(loc => loc.Id).ToList();
 
                     // Add a query to return calls that include any of the locations with the specified product type
-                    query = query.Where(call => locations.Any(loc => loc == call.LocationId));
+                    query = query.Where(call => locations.Any(loc => loc == call.Location.Id));
                 }
 
                 // If the status was given then add the filter to the query
@@ -136,7 +136,7 @@ namespace Mother.Web.Models
                 if (unique)
                 {
                     // Group the query results according to product name
-                    var groups = query.AsEnumerable().GroupBy(call => call.LocationId);
+                    var groups = query.Include(call => call.Location).AsEnumerable().GroupBy(call => call.Location);
 
                     // Assemble a list of the most recent product names in the groups
                     calls = new List<CallInfo>();
@@ -174,11 +174,11 @@ namespace Mother.Web.Models
                     var locations = apiDbContext.Locations.Where(loc => loc.Type == productId).Select(loc => loc.Id).ToList();
 
                     // Add a query to return calls that include any of the locations with the specified product type
-                    query = query.Where(call => locations.Any(loc => loc == call.LocationId));
+                    query = query.Where(call => locations.Any(loc => loc == call.Location.Id));
                 }
 
                 // Group the query results according to the location
-                var groups = query.AsEnumerable().GroupBy(call => call.LocationId);
+                var groups = query.Include(call => call.Location).AsEnumerable().GroupBy(call => call.Location.Id);
 
                 // Assemble a list of the viewmodel data needed for each row of the table
                 model.Locations = new List<Location>();
@@ -189,8 +189,11 @@ namespace Mother.Web.Models
                     row.callInfo = group.Last();
 
                     // Retrieve this location's name and type
-                    row.Name = apiDbContext.Locations.FirstOrDefault(loc => loc.Id == row.callInfo.LocationId).Name;
-                    row.Type = apiDbContext.Locations.FirstOrDefault(loc => loc.Id == row.callInfo.LocationId).Type;
+                    //row.Name = apiDbContext.Locations.FirstOrDefault(loc => loc.Id == row.callInfo.Location.Id).Name;
+                    //row.Type = apiDbContext.Locations.FirstOrDefault(loc => loc.Id == row.callInfo.Location.Id).Type;
+                    // This location's name and type were already retrieved via the Include() above
+                    row.Name = row.callInfo.Location.Name;
+                    row.Type = row.callInfo.Location.Type;
 
                     var lastStartCall = group.LastOrDefault(call => call.Status == StatusId.Start);
                     if (lastStartCall != null)
@@ -253,7 +256,7 @@ namespace Mother.Web.Models
                 return;
 
             // Delete all calls from the given location
-            var result = await apiDbContext.Calls.Where(call => call.LocationId == locationIdToDelete).DeleteAsync();
+            var result = await apiDbContext.Calls.Where(call => call.Location.Id == locationIdToDelete).DeleteAsync();
 
             // Then delete the location itself
             result = await apiDbContext.Locations.Where(loc => loc.Id == locationIdToDelete).DeleteAsync();

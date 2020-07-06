@@ -2,6 +2,7 @@
 using Mother.Web.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +13,10 @@ namespace Mother.Web.Models
         public int Id { get; set; }
         public DateTime Time { get; set; }
         /// <summary>The Id of this location in the Locations table.</summary>
-        public int LocationId { get; set; }
+        //[ForeignKey("Id")]
+        //public int LocationId { get; set; }
+        /// <summary>Navigation property.</summary>
+        public LocationInfo Location { get; set; }
         /// <summary>The version of the deployed product (do not prepend V).</summary>
         public string Version { get; set; }
         /// <summary>The current status of the deployed product.</summary>
